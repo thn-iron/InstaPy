@@ -14,6 +14,7 @@ from .util import progress_tracker
 
 from selenium.common.exceptions import NoSuchElementException
 
+from a1_core import instagram
 
 def get_followers(
     browser,
@@ -24,6 +25,7 @@ def get_followers(
     store_locally,
     logger,
     logfolder,
+    kinesis_client=None
 ):
     """ Get entire list of followers using graphql queries. """
 
@@ -157,6 +159,13 @@ def get_followers(
             edges = data["user"]["edge_followed_by"]["edges"]
             for user in edges:
                 all_followers.append(user["node"]["username"])
+
+                # publish data to kinesis
+                if kinesis_client is not None:
+                    request = instagram.createProfileRequest(username, user['node']['username']).to_json()
+                    logger.info("request: {}".format(request))
+
+                    kinesis_client.publishRecord(request)
 
             grabbed = len(set(all_followers))
 

@@ -4246,6 +4246,7 @@ class InstaPy:
         amount: int = None,
         live_match: bool = False,
         store_locally: bool = True,
+        kinesis_client: object = None,
     ):
         """
          Gets and returns `followers` information of given user
@@ -4285,6 +4286,7 @@ class InstaPy:
             store_locally,
             self.logger,
             self.logfolder,
+            kinesis_client
         )
         return grabbed_followers
 
